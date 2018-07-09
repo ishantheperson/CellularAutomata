@@ -4,19 +4,34 @@ class CellularAutomata {
   constructor() {
     this.rows = [];
   }
- 
 
+
+    /**
+     * Calculates the next row
+     * @param {boolean[]} row If present, adds this row to the sequence before the next is calculated
+     * @returns {boolean[]} Returns the next row
+     */
   public UpdateCells(row?: boolean[]): boolean[] {
     if (row) this.rows.push(row);
 
     let oldRow = this.rows[this.rows.length - 1];
     let newRow = [];
     oldRow.forEach((value, index) => {
-      newRow.push(this.Rule(oldRow[index === 0 ? oldRow.length - 1 : index - 1], oldRow[index + 1 === oldRow.length ? 0 : index + 1], value));
+      newRow.push(this.Rule(
+          oldRow[index === 0 ? oldRow.length - 1 : index - 1], // left
+          oldRow[index + 1 === oldRow.length ? 0 : index + 1], // right
+          value));
     });
     this.rows.push(newRow); return newRow;
   }
 
+    /**
+     * Calculates the state of a cell
+     * @param {boolean} left Left cell
+     * @param {boolean} right Right cell
+     * @param {boolean} center Center cell (value)
+     * @returns {boolean} New state
+     */
   private Rule(left: boolean, right: boolean, center: boolean): boolean {
     return (left !== (center || right)); // rule 30
     //return (left !== right); // rule 90
@@ -29,6 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let table = document.createElement('table');
   area.appendChild(table);
 
+  const SIZE = 12;
+  const PAUSE_LABEL = "Pause";
+  const RESUME_LABEL = "Resume";
+  let speed = 1000;
+  const intervalSize = 200;
+  let intervalId;
+
   let ParseRow = (data: boolean[]) => {
     let row = document.createElement('tr');
     data.forEach(elem => {
@@ -38,10 +60,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     table.appendChild(row);
-    area.scrollTop = area.scrollHeight;
-  }
 
-  const SIZE = 12;
+    area.scrollTop = area.scrollHeight;
+  };
+
+  let IncreaseSpeed = () => {
+      if (speed > intervalSize) {
+          speed -= intervalSize;
+          ResetInterval();
+      }
+      return false;
+  };
+
+  let DecreaseSpeed = () => {
+    speed += intervalSize;
+    return ResetInterval();
+  };
+
+
+  let ResetInterval = () => {
+    window.clearInterval(intervalId);
+    intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
+    return false;
+  };
+
+  let ToggleSim = event => {
+      if (isRunning) window.clearInterval(intervalId);
+      else intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
+
+      isRunning = !isRunning;
+      (<HTMLElement>event.currentTarget).innerHTML = isRunning ? PAUSE_LABEL : RESUME_LABEL;
+
+      return false;
+  };
+
+  document.getElementById('increaseSpeed').addEventListener('click', IncreaseSpeed);
+  document.getElementById('decreaseSpeed').addEventListener('click', DecreaseSpeed);
+  document.getElementById('toggleSim').addEventListener('click', ToggleSim);
 
   let app = new CellularAutomata();
 
@@ -52,35 +107,5 @@ document.addEventListener('DOMContentLoaded', () => {
   ParseRow(app.UpdateCells(initial));
 
   let isRunning = true;
-  let intervalId;
-  intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), 1000);
-
-  document.querySelector('#toggleSim').addEventListener('click', event => {
-    if (isRunning) window.clearInterval(intervalId);
-    else intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), 1000);
-
-    isRunning = !isRunning;
-    (<HTMLElement>event.currentTarget).innerHTML = isRunning ? "Stop" : "Resume";
-
-    return false;
-  });
-
-  /*
-  for (var y = 0; y < size; y++) {
-    let row = document.createElement('tr');
-    cells.push([]);
-    for (var x = 0; x < size; x++) {
-      let element = document.createElement('td');
-      element.innerHTML = "(" + x + ", " + y + ")";
-
-      cells[y][x] = element;
-      row.appendChild(element);
-    }
-    table.appendChild(row);
-  }
-
-  area.appendChild(table);
-
-  app = new ECA(cells);
-  */
+  intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
 });
