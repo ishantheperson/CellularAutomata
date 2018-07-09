@@ -30,7 +30,7 @@
 
     input { font: inherit; }
     [type=number] { width: 2em; text-align: right; }
-    [type=range] { direction: rtl; }
+    #speed { direction: rtl; }
     a { color: blue; text-decoration: underline; cursor: pointer; }
   </style>
   <style>
@@ -66,6 +66,9 @@
       <a id="toggleSim">Resume</a>
     </p>
     <p>While paused, click on the boxes in the last row to edit them</p>
+    <p>
+      <label>Border size <input type="range" id="borderSize" min="0" max="5" value="2"></label>
+    </p>
   </div>
   <div id="demoArea"></div>
 </body>

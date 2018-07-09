@@ -78,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isRunning)
             ResetInterval();
     };
+    let ChangeBorderSize = event => {
+        table.style.borderSpacing = event.target.value + 'px';
+    };
     let ResetInterval = () => {
         window.clearInterval(intervalId);
         intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
@@ -95,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('rule').addEventListener('change', ChangeRule);
     document.getElementById('size').addEventListener('change', ChangeSize);
     document.getElementById('speed').addEventListener('change', ChangeSpeed);
+    document.getElementById('borderSize').addEventListener('change', ChangeBorderSize);
     document.getElementById('toggleSim').addEventListener('click', ToggleSim);
     let ParseRow = (data) => {
         let row = document.createElement('tr');
