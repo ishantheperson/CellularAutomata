@@ -1,16 +1,15 @@
 class CellularAutomata {
   private rows: boolean[][];
 
-  constructor() {
-    this.rows = [];
+  constructor(row?: boolean[]) {
+    this.rows = [row];
   }
-
-
-    /**
-     * Calculates the next row
-     * @param {boolean[]} row If present, adds this row to the sequence before the next is calculated
-     * @returns {boolean[]} Returns the next row
-     */
+  
+  /**
+   * Calculates the next row
+   * @param {boolean[]} row If present, adds this row to the sequence before the next is calculated
+   * @returns {boolean[]} Returns the next row
+   */
   public UpdateCells(row?: boolean[]): boolean[] {
     if (row) this.rows.push(row);
 
@@ -25,15 +24,20 @@ class CellularAutomata {
     this.rows.push(newRow); return newRow;
   }
 
-    /**
-     * Calculates the state of a cell
-     * @param {boolean} left Left cell
-     * @param {boolean} right Right cell
-     * @param {boolean} center Center cell (value)
-     * @returns {boolean} New state
-     */
+  public UpdateOldRow(row: boolean[]) {
+    this.rows[this.rows.length - 1] = row;
+  }
+  
+  /**
+   * Calculates the state of a cell
+   * @param {boolean} left Left cell
+   * @param {boolean} right Right cell
+   * @param {boolean} center Center cell (value)
+   * @returns {boolean} New state
+   */
   private Rule(left: boolean, right: boolean, center: boolean): boolean {
-    return (left !== (center || right)); // rule 30
+    return left !== right;
+    //return (left !== (center || right)); // rule 30
     //return (left !== right); // rule 90
     //return ((left || right) !== (left && right && center));
   }
@@ -80,32 +84,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let ResetInterval = () => {
     window.clearInterval(intervalId);
+    
     intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
     return false;
   };
 
   let ToggleSim = event => {
-      if (isRunning) window.clearInterval(intervalId);
-      else intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
-
-      isRunning = !isRunning;
-      (<HTMLElement>event.currentTarget).innerHTML = isRunning ? PAUSE_LABEL : RESUME_LABEL;
-
-      return false;
+    if (isRunning) window.clearInterval(intervalId);
+    else intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
+    
+    isRunning = !isRunning;
+    (<HTMLElement>event.currentTarget).innerHTML = isRunning ? PAUSE_LABEL : RESUME_LABEL;
+    
+    return false;
   };
 
   document.getElementById('increaseSpeed').addEventListener('click', IncreaseSpeed);
   document.getElementById('decreaseSpeed').addEventListener('click', DecreaseSpeed);
   document.getElementById('toggleSim').addEventListener('click', ToggleSim);
 
-  let app = new CellularAutomata();
 
   let initial = [];
   for (let i = 0; i < SIZE; i++) {
     initial.push(Math.random() >= 0.5);
   }
-  ParseRow(app.UpdateCells(initial));
+  ParseRow(initial); // displays but does not initialize
 
-  let isRunning = true;
-  intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
+  // allow the elements to be modified
+  table.addEventListener('click', event => {
+    let elem = event.target as HTMLElement;
+    if (!isRunning && elem.tagName === 'TD') {
+      if (elem.className === 'on') elem.className = 'off';
+      else elem.className = 'on';
+    }
+    let data = [];
+    elem.parentNode.childNodes.forEach(cell => {
+      data.push(cell.className === 'on');
+    })
+    app.UpdateOldRow(data);
+  });
+
+  let isRunning = false;
+  let app = new CellularAutomata(initial);
+  //intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
 });

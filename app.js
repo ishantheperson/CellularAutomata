@@ -1,6 +1,6 @@
 var CellularAutomata = /** @class */ (function () {
-    function CellularAutomata() {
-        this.rows = [];
+    function CellularAutomata(row) {
+        this.rows = [row];
     }
     /**
      * Calculates the next row
@@ -21,6 +21,9 @@ var CellularAutomata = /** @class */ (function () {
         this.rows.push(newRow);
         return newRow;
     };
+    CellularAutomata.prototype.UpdateOldRow = function (row) {
+        this.rows[this.rows.length - 1] = row;
+    };
     /**
      * Calculates the state of a cell
      * @param {boolean} left Left cell
@@ -29,7 +32,8 @@ var CellularAutomata = /** @class */ (function () {
      * @returns {boolean} New state
      */
     CellularAutomata.prototype.Rule = function (left, right, center) {
-        return (left !== (center || right)); // rule 30
+        return left !== right;
+        //return (left !== (center || right)); // rule 30
         //return (left !== right); // rule 90
         //return ((left || right) !== (left && right && center));
     };
@@ -83,12 +87,27 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('increaseSpeed').addEventListener('click', IncreaseSpeed);
     document.getElementById('decreaseSpeed').addEventListener('click', DecreaseSpeed);
     document.getElementById('toggleSim').addEventListener('click', ToggleSim);
-    var app = new CellularAutomata();
     var initial = [];
     for (var i = 0; i < SIZE; i++) {
         initial.push(Math.random() >= 0.5);
     }
-    ParseRow(app.UpdateCells(initial));
-    var isRunning = true;
-    intervalId = window.setInterval(function () { return ParseRow(app.UpdateCells()); }, speed);
+    ParseRow(initial); // displays but does not initialize
+    // allow the elements to be modified
+    table.addEventListener('click', function (event) {
+        var elem = event.target;
+        if (!isRunning && elem.tagName === 'TD') {
+            if (elem.className === 'on')
+                elem.className = 'off';
+            else
+                elem.className = 'on';
+        }
+        var data = [];
+        elem.parentNode.childNodes.forEach(function (cell) {
+            data.push(cell.className === 'on');
+        });
+        app.UpdateOldRow(data);
+    });
+    var isRunning = false;
+    var app = new CellularAutomata(initial);
+    //intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
 });
