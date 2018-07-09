@@ -3,30 +3,43 @@
 <head>
   <title>ECA Demo</title>
   <meta charset="utf-8" />
-  <style type="text/css">
-    html {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      align-content: center;
-      align-items: center;
-      height: 100%;
-      margin: 0;
-      padding: 0;
+  <style>
+    html, body {
+      height: 100%; width: 100%; margin: 0; padding: 0;
     }
 
     body {
-      /* todo */
+      display: flex;
+      padding: 2em 5em;;
+      box-sizing: border-box;
+
+      font-size: 24px;
     }
 
-    tr {
-      text-align: center;
+    #sidebar, #demoArea, #deadspace { width: 100%; }
+
+    #sidebar { 
+      align-self: center; 
+      text-align: right; 
+      padding-right: 1em; 
     }
-    td {
-      width: 4em; height: 4em;
-      
+
+    h1 { font-size: 3em; margin: 0 }
+    h2 { font-weight: normal; }
+
+    a { color: blue; text-decoration: underline; cursor: pointer; }
+  </style>
+  <style>
+    table { margin: 0 auto; }
+    tr { text-align: center; }
+    td { width: 4em; }
+    td:before {
+      content: "";
+      display: block;
+      padding-top: 100%;
     }
     
+    #demoArea { overflow: auto;}
     .on { background-color: cornflowerblue; }
     .off { background-color: tomato; }
   </style>
@@ -35,6 +48,11 @@
 </head>
 
 <body>
-  <div id="eca"></div>
+  <div id="sidebar">
+    <h1>Elementary<br />Cellular<br />Automata</h1>
+    <h2>Ishan Bhargava</h2>
+    <a id="toggleSim">Stop</a>
+  </div>
+  <div id="demoArea"></div>
 </body>
 </html>

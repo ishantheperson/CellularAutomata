@@ -18,14 +18,14 @@ class CellularAutomata {
   }
 
   private Rule(left: boolean, right: boolean, center: boolean): boolean {
-    //return ((left && !right) || (!left && right)); // xor rule
     return (left !== (center || right)); // rule 30
+    //return (left !== right); // rule 90
+    //return ((left || right) !== (left && right && center));
   }
 }
 
-var app: CellularAutomata; // global for test only
 document.addEventListener('DOMContentLoaded', () => {
-  let area = document.querySelector('div');
+  let area = document.querySelector('#demoArea');
   let table = document.createElement('table');
   area.appendChild(table);
 
@@ -38,16 +38,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     table.appendChild(row);
+    area.scrollTop = area.scrollHeight;
   }
 
-  app = new CellularAutomata();
+  const SIZE = 12;
 
-  let initial = [false, false, true, true, false, true, false, false];
+  let app = new CellularAutomata();
+
+  let initial = [];
+  for (let i = 0; i < SIZE; i++) {
+    initial.push(Math.random() >= 0.5);
+  }
   ParseRow(app.UpdateCells(initial));
 
-  window.setInterval(() => {
-    ParseRow(app.UpdateCells());
-  }, 1000);
+  let isRunning = true;
+  let intervalId;
+  intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), 1000);
+
+  document.querySelector('#toggleSim').addEventListener('click', event => {
+    if (isRunning) window.clearInterval(intervalId);
+    else intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), 1000);
+
+    isRunning = !isRunning;
+    (<HTMLElement>event.currentTarget).innerHTML = isRunning ? "Stop" : "Resume";
+
+    return false;
+  });
 
   /*
   for (var y = 0; y < size; y++) {
