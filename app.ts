@@ -1,7 +1,7 @@
 class CellularAutomata {
   private rows: boolean[][];
   
-  constructor(row?: boolean[]) {
+  constructor(row?: boolean[], private rule: string = "left !== right") {
     this.rows = [row];
   }
   
@@ -37,7 +37,8 @@ class CellularAutomata {
    * @returns {boolean} New state
    */
   private Rule(left: boolean, right: boolean, center: boolean): boolean {
-    return left !== right;
+    return (eval(this.rule));
+    //return left !== right;
     //return (left !== (center || right)); // rule 30
     //return (left !== right); // rule 90
     //return ((left || right) !== (left && right && center));
@@ -69,23 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
   let speed = 1000;
   const intervalSize = 200;
   let intervalId;
-
+  let rule = "left !== right";
+  
+  let ChangeRule = event => {
+    rule = event.target.value;
+    Reset();
+  };
+  
   let ChangeSize = event => {
     size = event.target.value;
     Reset();
   };
   
-  let IncreaseSpeed = () => {
-    if (speed > intervalSize) {
-      speed -= intervalSize;
-      ResetInterval();
-    }
-    return false;
-  };
-  
-  let DecreaseSpeed = () => {
-    speed += intervalSize;
-    return ResetInterval();
+  let ChangeSpeed = event => {
+    speed = event.target.value;
+    if (isRunning) ResetInterval();
   };
   
   let ResetInterval = () => {
@@ -95,19 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   };
   
-  let ToggleSim = event => {
+  let ToggleSim = () => {
     if (isRunning) window.clearInterval(intervalId);
     else intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
     
     isRunning = !isRunning;
-    (<HTMLElement>event.currentTarget).innerHTML = isRunning ? PAUSE_LABEL : RESUME_LABEL;
+    document.getElementById('toggleSim').innerText = isRunning ? PAUSE_LABEL : RESUME_LABEL;
     
     return false;
   };
   
-  document.getElementById('size').addEventListener('change', ChangeSize)
-  document.getElementById('increaseSpeed').addEventListener('click', IncreaseSpeed);
-  document.getElementById('decreaseSpeed').addEventListener('click', DecreaseSpeed);
+  document.getElementById('rule').addEventListener('change', ChangeRule);
+  document.getElementById('size').addEventListener('change', ChangeSize);
+  document.getElementById('speed').addEventListener('change', ChangeSpeed);
   document.getElementById('toggleSim').addEventListener('click', ToggleSim);
   
   let ParseRow = (data: boolean[]) => {
@@ -127,8 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let app;
   
   function Reset() {
-    if (isRunning) window.clearInterval(intervalId);
-    isRunning = false;
+    if (isRunning) ToggleSim();
   
     while (table.hasChildNodes()) {
       table.removeChild(table.lastChild);
@@ -141,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     ParseRow(initial); // displays but does not initialize
-    app = new CellularAutomata(initial);
+    app = new CellularAutomata(initial, rule);
   }
   
   Reset();

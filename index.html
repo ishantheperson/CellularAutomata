@@ -16,18 +16,21 @@
       font-size: 24px;
     }
 
-    #sidebar, #demoArea, #deadspace { width: 100%; }
+    #sidebar, #demoArea { width: 100%; }
 
     #sidebar {
       align-self: center;
       text-align: right;
       padding-right: 1em;
+      flex-shrink: 2;
     }
 
     h1 { font-size: 3em; margin: 0 }
     h2 { font-weight: normal; }
 
-    input { font: inherit; width: 2em; text-align: right; }
+    input { font: inherit; }
+    [type=number] { width: 2em; text-align: right; }
+    [type=range] { direction: rtl; }
     a { color: blue; text-decoration: underline; cursor: pointer; }
   </style>
   <style>
@@ -53,11 +56,13 @@
     <h1>Cellular<br />Automata</h1>
     <h2>Ishan Bhargava</h2>
     <p>
-      Current size: <input type="number" id="size" min="1" value="36" />
+      <label>Rule: <input type="text" id="rule" value="left !== right" /></label>
     </p>
     <p>
-      <a id="increaseSpeed">Increase Speed</a> -
-      <a id="decreaseSpeed">Decrease Speed</a> -
+      <label>Current size: <input type="number" id="size" min="1" value="36" /></label>
+    </p>
+    <p>
+      <label>Speed: <input type="range" id="speed" min="10" max="3000" value="1000" /></label>
       <a id="toggleSim">Resume</a>
     </p>
     <p>While paused, click on the boxes in the last row to edit them</p>
