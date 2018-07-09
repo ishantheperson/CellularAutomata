@@ -18,15 +18,16 @@
 
     #sidebar, #demoArea, #deadspace { width: 100%; }
 
-    #sidebar { 
-      align-self: center; 
-      text-align: right; 
-      padding-right: 1em; 
+    #sidebar {
+      align-self: center;
+      text-align: right;
+      padding-right: 1em;
     }
 
     h1 { font-size: 3em; margin: 0 }
     h2 { font-weight: normal; }
 
+    input { font: inherit; width: 2em; text-align: right; }
     a { color: blue; text-decoration: underline; cursor: pointer; }
   </style>
   <style>
@@ -38,7 +39,7 @@
       display: block;
       padding-top: 100%;
     }
-    
+
     #demoArea { overflow: auto;}
     .on { background-color: cornflowerblue; }
     .off { background-color: tomato; }
@@ -51,9 +52,15 @@
   <div id="sidebar">
     <h1>Cellular<br />Automata</h1>
     <h2>Ishan Bhargava</h2>
-    <a id="increaseSpeed">Increase speed</a> -
-    <a id="decreaseSpeed">Decrease speed</a> -
-    <a id="toggleSim">Resume</a>
+    <p>
+      Current size: <input type="number" id="size" min="1" value="36" />
+    </p>
+    <p>
+      <a id="increaseSpeed">Increase Speed</a> -
+      <a id="decreaseSpeed">Decrease Speed</a> -
+      <a id="toggleSim">Resume</a>
+    </p>
+    <p>While paused, click on the boxes in the last row to edit them</p>
   </div>
   <div id="demoArea"></div>
 </body>
