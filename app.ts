@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       let data = [];
       elem.parentNode.childNodes.forEach(cell => {
-        data.push(cell.className === 'on');
+        data.push((cell as HTMLElement).className === 'on');
       })
       app.UpdateOldRow(data);
     }
