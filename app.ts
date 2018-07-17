@@ -1,18 +1,15 @@
 class CellularAutomata {
   private rows: boolean[][];
   
-  constructor(row?: boolean[], private rule: string = "left !== right") {
+  constructor(row: boolean[], private rule: string = "left !== right") {
     this.rows = [row];
   }
   
   /**
    * Calculates the next row
-   * @param {boolean[]} row If present, adds this row to the sequence before the next is calculated
    * @returns {boolean[]} Returns the next row
    */
-  public UpdateCells(row?: boolean[]): boolean[] {
-    if (row) this.rows.push(row);
-    
+  public UpdateCells(): boolean[] {
     let oldRow = this.rows[this.rows.length - 1];
     let newRow = [];
     oldRow.forEach((value, index) => {
@@ -37,7 +34,7 @@ class CellularAutomata {
    * @returns {boolean} New state
    */
   private Rule(left: boolean, right: boolean, center: boolean): boolean {
-    return (eval(this.rule));
+    return eval(this.rule);
     //return left !== right;
     //return (left !== (center || right)); // rule 30
     //return (left !== right); // rule 90
@@ -47,6 +44,7 @@ class CellularAutomata {
 
 document.addEventListener('DOMContentLoaded', () => {
   let area = document.querySelector('#demoArea');
+ 
   let table = document.createElement('table');
   // allow the elements to be modified
   table.addEventListener('click', event => {
@@ -58,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let data = [];
       elem.parentNode.childNodes.forEach(cell => {
         data.push((cell as HTMLElement).className === 'on');
-      })
+      });
       app.UpdateOldRow(data);
     }
   });
@@ -68,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const RESUME_LABEL = "Resume";
   let size = 36;
   let speed = 1000;
-  const intervalSize = 200;
   let intervalId;
   let rule = "left !== right";
   
@@ -102,9 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isRunning) window.clearInterval(intervalId);
     else intervalId = window.setInterval(() => ParseRow(app.UpdateCells()), speed);
     
-    isRunning = !isRunning;
-    document.getElementById('toggleSim').innerText = isRunning ? PAUSE_LABEL : RESUME_LABEL;
-    
+    setIsRunning(!isRunning);
     return false;
   };
   
@@ -118,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let row = document.createElement('tr');
     data.forEach(elem => {
       let cell = document.createElement('td');
-      cell.classList.add(elem ? 'on' : 'off');
+      cell.className = elem ? 'on' : 'off';
       row.appendChild(cell);
     });
     
@@ -128,6 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   let isRunning;
+  let setIsRunning = val => {
+    isRunning = val;
+    document.getElementById('toggleSim').innerText = isRunning ? PAUSE_LABEL : RESUME_LABEL;
+  };
   let app;
   
   function Reset() {
